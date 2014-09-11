@@ -1,5 +1,3 @@
-require 'logger'
-
 module EnvoyIdempotence
   class Middleware
     def initialize app, worker, logger = nil

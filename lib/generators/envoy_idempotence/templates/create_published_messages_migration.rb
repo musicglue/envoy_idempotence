@@ -7,9 +7,10 @@ class EnvoyIdempotenceCreatePublishedMessages < ActiveRecord::Migration
       t.json :message, null: false
       t.json :response
 
-      t.string :published_by
-
+      t.integer :attempts, null: false, default: 0
       t.datetime :attempted_at
+
+      t.string :published_by
       t.datetime :published_at
 
       t.index :published_by

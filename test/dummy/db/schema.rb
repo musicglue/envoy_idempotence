@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140911174535) do
+ActiveRecord::Schema.define(version: 20140911202145) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,11 +30,12 @@ ActiveRecord::Schema.define(version: 20140911174535) do
   create_table "published_messages", id: :uuid, default: "uuid_generate_v4()", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "topic",        null: false
-    t.json     "message",      null: false
+    t.string   "topic",                    null: false
+    t.json     "message",                  null: false
     t.json     "response"
-    t.string   "published_by"
+    t.integer  "attempts",     default: 0, null: false
     t.datetime "attempted_at"
+    t.string   "published_by"
     t.datetime "published_at"
   end
 

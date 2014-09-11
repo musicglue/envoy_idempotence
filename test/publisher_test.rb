@@ -15,6 +15,7 @@ describe publisher do
     class StubTopic
       def publish json
         published << ActiveSupport::JSON.decode(json)
+        OpenStruct.new data: { success: true }
       end
 
       def published
@@ -43,7 +44,8 @@ describe publisher do
       @message_5 = PublishedMessage.create!(topic: 'topic_e', message: { foo: 'bar-e' })
 
       @docket = StubDocket.new(%w(topic_a topic_b topic_c topic_d topic_e))
-      @published_messages = publisher.new(limit: 2, docket_client: @docket).publish
+      @publisher = publisher.new(limit: 2, docket_client: @docket)
+      @published_messages = @publisher.publish
     end
 
     it 'the set of published messages must match the limit attribute' do
@@ -66,8 +68,34 @@ describe publisher do
     end
 
     describe 'a second invocation' do
-      it 'does not publish any of the already published messages' do
+      before do
+        @published_messages_2 = @publisher.publish
+      end
 
+      it 'does not publish any of the already published messages' do
+        @published_messages_2.wont_include @message_1
+        @published_messages_2.wont_include @message_2
+      end
+
+      it 'the set of published messages must match the limit attribute' do
+        @published_messages_2.size.must_equal 2
+      end
+
+      it 'the published messages are the earliest created that are still unsent' do
+        @published_messages_2.must_include @message_3
+        @published_messages_2.must_include @message_4
+      end
+
+      it 'marks the messages as attempted' do
+        @published_messages_2.all? { |m| m.attempts.must_equal 1 }
+      end
+
+      it 'marks the messages as published' do
+        @published_messages_2.all? { |m| m.published_at.must_be :present? }
+      end
+
+      it 'stores the response on the message' do
+        @published_messages_2.all? { |m| m.response.wont_be :nil? }
       end
     end
   end
