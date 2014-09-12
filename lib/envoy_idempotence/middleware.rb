@@ -8,9 +8,10 @@ module EnvoyIdempotence
 
     def call env
       if ProcessedMessage.exists? message_id: message_id, queue: queue
-        @logger.warn %(middleware="message_idempotence" at="call" ignored_message_id="#{message_id}")
+        @logger.warn component: 'envoy_idempotence_middleware', at: 'call', ignored_message_id: message_id
       else
         @app.call env
+        ProcessedMessage.log @worker.message
       end
     end
 
