@@ -17,11 +17,14 @@ module EnvoyIdempotence
       messages.update_all 'attempts = attempts + 1'
 
       messages.each do |message|
-        response = @docket.topics[message.topic].publish message.message.to_json
-        message.update! response: response.data.to_hash
+        begin
+          response = @docket.topics[message.topic].publish message.message.to_json
+          message.update! response: response.data.to_hash, published_at: Time.now
+        rescue => e
+          message.update! response: e.to_s
+        end
       end
 
-      messages.update_all published_at: Time.now
       messages.reload
     end
   end
