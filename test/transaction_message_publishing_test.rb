@@ -9,6 +9,14 @@ class ImportantMessage
   end
 end
 
+class OtherMessage
+  include Docket::Message
+
+  def attributes
+    { something: 'else' }
+  end
+end
+
 describe EnvoyIdempotence::TransactionalMessage do
   describe 'when a message is published transactionally' do
     before do
@@ -30,6 +38,18 @@ describe EnvoyIdempotence::TransactionalMessage do
 
       it 'has the correct payload' do
         @message.message['body']['money'].must_equal 100
+      end
+    end
+
+    describe "the message's class" do
+      before do
+        OtherMessage.new.publish_transactionally
+        @scope = ImportantMessage.unsent
+      end
+
+      it 'can find the unsent message via a scope' do
+        @scope.count.must_equal 1
+        @scope.first.message['body']['money'].must_equal 100
       end
     end
   end

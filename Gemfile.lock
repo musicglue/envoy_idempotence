@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/musicglue/docket.git
-  revision: bea5d6552825556b12c92e74716af8cad7f33329
+  revision: 3b33b3676940cda7c97df29a104b914fcacf68a5
   specs:
     docket (1.0.0)
       activemodel
