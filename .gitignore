@@ -2,6 +2,7 @@
 .envrc
 log/*.log
 pkg/
+test/dummy/app/models/*.rb
 test/dummy/db/*.sqlite3
 test/dummy/db/*.sqlite3-journal
 test/dummy/db/schema.rb
