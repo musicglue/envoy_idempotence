@@ -10,4 +10,4 @@ language: ruby
 rvm:
   - ruby-2.1.2
 
-script: bin/setup
+script: bundle exec bin/setup
