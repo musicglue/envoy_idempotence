@@ -10,4 +10,7 @@ language: ruby
 rvm:
   - ruby-2.1.2
 
+addons:
+  postgresql: "9.3"
+
 script: bundle exec bin/setup
