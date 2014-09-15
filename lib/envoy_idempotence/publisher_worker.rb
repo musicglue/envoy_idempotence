@@ -11,7 +11,7 @@ module EnvoyIdempotence
       until @stopping
         message_count = @publisher.publish.count
         debug component: 'publisher_worker', at: 'after_publish', sent_count: message_count
-        sleep 10 if message_count == 0
+        sleep 1 if message_count == 0
       end
     end
 
