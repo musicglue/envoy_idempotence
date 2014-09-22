@@ -1,9 +1,9 @@
 module EnvoyIdempotence
   class Middleware
-    def initialize app, worker, logger = nil
+    def initialize app, worker, logger = Envoy::Logging
       @app = app
       @worker = worker
-      @logger = logger || Rails.logger
+      @logger = logger
     end
 
     def call env

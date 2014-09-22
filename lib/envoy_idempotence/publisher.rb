@@ -1,9 +1,10 @@
 module EnvoyIdempotence
   class Publisher
-    def initialize limit: 10, docket_client: Docket
+    def initialize limit: 10, docket_client: Docket, logger: Envoy::Logging
       @limit = limit
       @docket = docket_client
       @publisher_id = ENV['DYNO'] || "publisher"
+      @logger = logger
     end
 
     def publish
@@ -21,7 +22,8 @@ module EnvoyIdempotence
           response = @docket.topics[message.topic].publish message.message.to_json
           message.update! response: response.data.to_hash, published_at: Time.now
         rescue => e
-          message.update! response: e.to_s
+          @logger.error({ component: 'envoy_idempotence_publisher', at: 'publish' }, e)
+          message.update! response: { error: e.to_s }
         end
       end
 
