@@ -18,11 +18,11 @@ module EnvoyIdempotence
     private
 
     def message_id
-      @worker.message.headers[:id]
+      @worker.message.id
     end
 
     def queue
-      @worker.message.queue_name
+      @worker.message.queue
     end
   end
 end
