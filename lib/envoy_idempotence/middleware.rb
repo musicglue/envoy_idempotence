@@ -26,3 +26,11 @@ module EnvoyIdempotence
     end
   end
 end
+
+module Envoy::Worker
+  module ClassMethods
+    def idempotent
+      middleware << EnvoyIdempotence::Middleware
+    end
+  end
+end
