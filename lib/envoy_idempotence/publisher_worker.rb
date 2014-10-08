@@ -7,7 +7,7 @@ module EnvoyIdempotence
       @publisher = EnvoyIdempotence::Publisher.new
     end
 
-    def run
+    def start
       until @stopping
         message_count = @publisher.publish.count
 
