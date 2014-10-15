@@ -30,7 +30,7 @@ end
 module Envoy::Worker
   module ClassMethods
     def idempotent
-      middleware << EnvoyIdempotence::Middleware
+      add_middleware EnvoyIdempotence::Middleware
     end
   end
 end
