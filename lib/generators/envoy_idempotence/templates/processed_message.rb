@@ -6,7 +6,7 @@ class ProcessedMessage < ActiveRecord::Base
   def self.log message
     create!(
       message_id: message.id,
-      queue: message.queue_name,
+      queue: message.queue,
       message: message.to_h)
   end
 end

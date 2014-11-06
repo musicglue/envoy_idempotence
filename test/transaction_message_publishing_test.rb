@@ -2,7 +2,7 @@ require_relative 'test_helper'
 require_relative '../lib/generators/envoy_idempotence/templates/published_message'
 
 class ImportantMessage
-  include Docket::Message
+  include Envoy::Message
 
   def attributes
     { money: 100 }
@@ -10,7 +10,7 @@ class ImportantMessage
 end
 
 class OtherMessage
-  include Docket::Message
+  include Envoy::Message
 
   def attributes
     { something: 'else' }

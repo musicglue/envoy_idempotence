@@ -4,30 +4,24 @@ require_relative '../lib/envoy_idempotence/publisher'
 publisher = EnvoyIdempotence::Publisher
 
 describe publisher do
-  class StubDocket
-    def initialize topics
-      @topics = {}
-      topics.each { |topic| @topics[topic] = StubTopic.new }
+  class StubPublisherClient
+    def initialize
+      @topics = Hash.new { [] }
     end
 
     attr_reader :topics
 
-    class StubTopic
-      def publish json
-        published << ActiveSupport::JSON.decode(json)
-        OpenStruct.new data: { success: true }
-      end
-
-      def published
-        @published ||= []
-      end
+    def publish message
+      @topics.store message.topic, (@topics[message.topic] << message.message)
+      OpenStruct.new data: { success: true }
     end
   end
 
   describe 'when there are no messages to be published' do
     before do
       PublishedMessage.delete_all
-      @published_messages = publisher.new.publish
+      @publisher_client = StubPublisherClient.new
+      @published_messages = publisher.new(publisher_client: @publisher_client).publish
     end
 
     it 'does not publish any messages' do
@@ -43,8 +37,8 @@ describe publisher do
       @message_4 = PublishedMessage.create!(topic: 'topic_d', message: { foo: 'bar-d' })
       @message_5 = PublishedMessage.create!(topic: 'topic_e', message: { foo: 'bar-e' })
 
-      @docket = StubDocket.new(%w(topic_a topic_b topic_c topic_d topic_e))
-      @publisher = publisher.new(limit: 2, docket_client: @docket)
+      @publisher_client = StubPublisherClient.new
+      @publisher = publisher.new(limit: 2, publisher_client: @publisher_client)
       @published_messages = @publisher.publish
     end
 
@@ -57,14 +51,14 @@ describe publisher do
       @published_messages.must_include @message_2
     end
 
-    it 'publishes the messages to sqs using docket' do
-      @docket.topics['topic_a'].published.count.must_equal 1
-      @docket.topics['topic_a'].published.first['foo'].must_equal 'bar-a'
-      @docket.topics['topic_b'].published.count.must_equal 1
-      @docket.topics['topic_b'].published.first['foo'].must_equal 'bar-b'
-      @docket.topics['topic_c'].published.count.must_equal 0
-      @docket.topics['topic_d'].published.count.must_equal 0
-      @docket.topics['topic_e'].published.count.must_equal 0
+    it 'publishes the messages to sqs' do
+      @publisher_client.topics['topic_a'].count.must_equal 1
+      @publisher_client.topics['topic_a'].first['foo'].must_equal 'bar-a'
+      @publisher_client.topics['topic_b'].count.must_equal 1
+      @publisher_client.topics['topic_b'].first['foo'].must_equal 'bar-b'
+      @publisher_client.topics['topic_c'].count.must_equal 0
+      @publisher_client.topics['topic_d'].count.must_equal 0
+      @publisher_client.topics['topic_e'].count.must_equal 0
     end
 
     describe 'a second invocation' do

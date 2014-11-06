@@ -12,5 +12,4 @@ gemspec
 
 # To use debugger
 # gem 'debugger'
-
-gem 'docket', github: 'musicglue/docket'
+gem 'envoy', github: 'musicglue/envoy', branch: 'simplify'

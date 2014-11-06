@@ -15,15 +15,15 @@ describe middleware do
   end
 
   class StubMessage
-    def initialize id, queue_name
-      @id, @queue_name = id, queue_name
+    def initialize id, queue
+      @id, @queue = id, queue
     end
 
     def headers
       to_h[:headers]
     end
 
-    attr_reader :id, :queue_name
+    attr_reader :id, :queue
 
     def to_h
       {
