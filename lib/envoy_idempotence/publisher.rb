@@ -19,7 +19,7 @@ module EnvoyIdempotence
 
       messages.each do |message|
         begin
-          response = @publisher.publish message
+          response = @publisher.publish message.message
           message.update! response: response.data.to_hash, published_at: Time.now
         rescue => e
           @logger.error({ component: 'envoy_idempotence_publisher', at: 'publish' }, e)
